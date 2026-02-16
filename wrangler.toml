@@ -1,0 +1,13 @@
+name = "telegram-file-storage"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# KV 命名空间绑定
+kv_namespaces = [
+  { binding = "FILES_KV", id = "YOUR_KV_NAMESPACE_ID", preview_id = "YOUR_PREVIEW_KV_ID" }
+]
+
+# 注意：敏感信息通过 wrangler secret put 设置，不要写在这里
+# wrangler secret put BOT_TOKEN
+# wrangler secret put CHANNEL_ID
+# wrangler secret put MY_USER_ID
