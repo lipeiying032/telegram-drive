@@ -1,0 +1,41 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main          # 或你的主分支，如 master
+  workflow_dispatch:    # 允许手动触发（在 Actions 页面点 Run workflow）
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 如果你的项目需要安装依赖（如 npm install hono 等）
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'          # 或 lts/*
+          cache: 'npm'                # 如果用 npm
+
+      - name: Install dependencies
+        run: npm ci                   # 或 pnpm install / yarn install，根据你的 lockfile
+
+      # 核心部署步骤：用官方 wrangler-action
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # 可选参数，根据需要加
+          # workingDirectory: '.'     # 如果 wrangler.toml 不在根目录，改这里
+          # packageManager: npm       # 默认 npm，如果你用 pnpm/yarn 改成 pnpm/yarn
+          # wranglerVersion: '3'      # 固定版本，避免更新出问题
+          # secrets: |                # 如果要额外注入 secrets 到 Worker（可选）
+          #   BOT_TOKEN
+          #   CHANNEL_ID
+          #   MY_USER_ID
